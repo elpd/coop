@@ -22,9 +22,14 @@ $(document).ready(function () {
 
         $("#total_amount").val(total.toFixed(2));
 
-        var previous_dept = parseFloat($("#previous_dept").val());
-        var overall_amount = previous_dept + total;
-        $("#overall_amount").val(overall_amount.toFixed(4));
+        var previous_debt = parseFloat($("#previous_debt").val());
+        var overall_amount = previous_debt + total;
+        $("#overall_amount").val(overall_amount.toFixed(2));
+
+        var actual_payment = parseFloat($("#actual_payment").val());
+        actual_payment = isNaN(actual_payment) ? 0 : actual_payment;
+        var overall_debt = overall_amount - actual_payment;
+        $("#overall_debt").val(overall_debt.toFixed(2));
     }
 
     $(".amount_input").keyup(function () {
@@ -52,6 +57,10 @@ $(document).ready(function () {
         $(".amount_txt[product_id='" + product_id + "']").html(cost);
 
         calcTotalAmount();
+    });
+
+    $('#actual_payment').keyup(function(){
+       calcTotalAmount();
     });
 
     // display only line we ordered

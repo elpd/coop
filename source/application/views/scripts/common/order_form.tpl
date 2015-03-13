@@ -47,11 +47,12 @@
 {else}
     {if !$duty_editing}
         <div id="order_view_type">
-        <b>תצוגה:</b>&nbsp;
-        <a class="{if $order_view_type == "list"}selected{else}change" href="#{/if}" id="list">רשימה</a>&nbsp;
-        <a class="{if $order_view_type == "gallery"}selected{else}change" href="#{/if}" id="gallery">גלריה</a>&nbsp;
-        <!--{$public_path}/user/change-view/type/gallery"-->
-        </div>{/if}
+            <b>תצוגה:</b>&nbsp;
+            <a class="{if $order_view_type == "list"}selected{else}change" href="#{/if}" id="list">רשימה</a>&nbsp;
+            <a class="{if $order_view_type == "gallery"}selected{else}change" href="#{/if}" id="gallery">גלריה</a>&nbsp;
+            <!--{$public_path}/user/change-view/type/gallery"-->
+        </div>
+    {/if}
     <div id="order_form" class="list">
         <form action="{$public_path}/{$controller}/save-order" method="post">
             {if $duty_editing}
@@ -156,7 +157,11 @@
 
 
 
-                                                                                                                                                                                                                                                                                                                                                                         מתוך {$product.product_items_left}{/if}</span><br/>
+
+
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         מתוך {$product.product_items_left}{/if}</span><br/>
                             <span class="show_price"><b>מחיר:</b> ₪<a class="price"
                                                                       product_id="{$product.product_id}">{$product.product_price|escape:"html"|stripslashes}</a> ל{$product.product_measure|escape:"html"|stripslashes}</span><br/>
                             <span class="show_amount"><b>כמות:</b> <input type="text" size="2" dir="ltr" maxlength="10"
@@ -184,76 +189,107 @@
             </table>
 
             {if $allow_edit}
-            <div id="order_bottom_sticky">
+                <div id="order_bottom_sticky">
 
-                <div id="submit_form_container" class="sticky">
-                    <input type="submit" id="submit_form" name="save_form_submit"
-                           class="submit_button" value="שמור" tabindex="3"
-                            {if $order.order_status != "unpayed"}disabled="disabled"{/if} />
-                    <br/>
-                    <input type="submit" id="close_order_submit" name="close_order_submit"
-                           class="submit_button" value="סגור הזמנה" tabindex="4"
-                           {if $order.order_status != "unpayed"}disabled="disabled"{/if} />
-                </div>
-
-                <div id="sticky_right">
-                    <a href="{$public_path}/duty" tabindex="1"><< חזרה לרשימת ההזמנות</a>
-                </div>
-
-                <div id="sticky_total">
-                    {*{if $duty_editing}
-                    <label>סטטוס:</label>
-                    {include file='duty/change_status.tpl'}
-                    {/if} *}
-                    &nbsp;&nbsp;&nbsp;
-                    <div id="sticky_total_sums">
-                        <label for="total_amount">קניה נוכחית:</label>
-                        <input type="text" id="total_amount" name="total_amount"
-                               class="presentational_input" readonly />
-                        &nbsp;<b>₪</b>
-                        <label for="previous_dept">חוב קודם:</label>
-                        <input type="text" id="previous_dept" name="previous_dept"
-                               class="presentational_input" value="{$user_dept}"
-                               readonly />
-                        &nbsp;<b>₪</b>
-                        <label for="overall_amount">לתשלום:</label>
-                        <input id="overall_amount" name="overall_amount"
-                               class="presentational_input" readonly />
-                        &nbsp;<b>₪</b>
+                    <div id="submit_form_container" class="sticky">
+                        <input type="submit" id="submit_form" name="save_form_submit"
+                               class="submit_button" value="שמור" tabindex="3"
+                               {if ( (isset($order)) && $order.order_status != "unpayed")}disabled="disabled"{/if} />
+                        {if $duty_editing}
+                            <br/>
+                            <input type="submit" id="close_order_submit" name="close_order_submit"
+                                   class="submit_button" value="סגור הזמנה" tabindex="4"
+                                   {if $order.order_status != "unpayed"}disabled="disabled"{/if} />
+                        {/if}
                     </div>
 
-                    {if $duty_editing}
-                        <br/>
-                        <div id="sticky_total_payment">
-                            <label for="actual_payment">שולם:</label>
-                            <input type="number" step="0.01" id="actual_payment" name="actual_payment"
-                                   {if $order.order_status != "unpayed"}disabled="disabled"{/if} />
-                            &nbsp;
-                            <b>₪</b>
+                    <div id="sticky_right">
+                        <a href="{$public_path}/duty" tabindex="1"><< חזרה לרשימת ההזמנות</a>
+                    </div>
 
-                            <label for="overall_dept">חוב חדש:</label>
-                            <input type="text" id="overall_dept" name="overall_dept"
-                                   class="presentational_input" readonly />
-                            &nbsp;
-                            <b>₪</b>
+                    <div id="sticky_total">
+                        {*{if $duty_editing}
+                        <label>סטטוס:</label>
+                        {include file='duty/change_status.tpl'}
+                        {/if} *}
+                        &nbsp;&nbsp;&nbsp;
+                        <div id="sticky_total_sums">
+                            <label for="total_amount">קניה נוכחית:</label>
+                            <input type="text" id="total_amount" name="total_amount"
+                                   class="presentational_input" readonly/>
+                            &nbsp;<b>₪</b>
+                            <label for="previous_debt">חוב קודם:</label>
+                            <input type="text" id="previous_debt" name="previous_debt"
+                                   class="presentational_input" value="{$user_debt}"
+                                   readonly/>
+                            &nbsp;<b>₪</b>
+                            <label for="overall_amount">לתשלום:</label>
+                            <input id="overall_amount" name="overall_amount"
+                                   class="presentational_input" readonly/>
+                            &nbsp;<b>₪</b>
+                        </div>
 
+                        {if $duty_editing}
+                            <br/>
+                            <div id="sticky_total_payment">
+                                <label for="actual_payment">שולם:</label>
+                                <input type="number" step="0.01" id="actual_payment" name="actual_payment"
+                                       {if $order.order_status != "unpayed"}disabled="disabled"{/if} />
+                                &nbsp;
+                                <b>₪</b>
+
+                                <label for="overall_debt">חוב חדש:</label>
+                                <input type="text" id="overall_debt" name="overall_debt"
+                                       class="presentational_input" readonly/>
+                                &nbsp;
+                                <b>₪</b>
+                            </div>
+                        {/if}
+
+                        <div id="order_status_section">
                             <input type="text" id="order_status" class="presentational_input"
                                    value=
                                    {if $order.order_status == "unpayed"}"ההזמנה פתוחה"{/if}
-                                   {if $order.order_status == "payed"}"ההזמנה סגורה"{/if}
-                                    />
+                            {if $order.order_status == "payed"}"ההזמנה סגורה"{/if}
+                            {if !isset($order)}""{/if}
+                             readonly />
                         </div>
-                    {/if}
+
+                    </div>
 
                 </div>
+            {/if}
 
-            </div>
         </form>
-        {else}
-        <div id="total" style="width: 930px;">
-            <label>סכום משוער:</label>
-            <b id="total_amount">0</b>&nbsp;<b>₪</b>
-        </div>
+
+        {if ! $allow_edit}
+            {*        <div id="total" style="width: 930px;">
+                        <label>סכום משוער:</label>
+                        <b id="total_amount">0</b>&nbsp;<b>₪</b>
+                    </div>*}
+            <div id="view_total_sums">
+                <label for="total_amount">קניה נוכחית:</label>
+                <input type="text" id="total_amount" name="total_amount"
+                       class="presentational_input" readonly/>
+                &nbsp;<b>₪</b>
+                <label for="previous_debt">חוב קודם:</label>
+                <input type="text" id="previous_debt" name="previous_debt"
+                       class="presentational_input" value="{$user_debt}"
+                       readonly/>
+                &nbsp;<b>₪</b>
+                <label for="overall_amount">לתשלום:</label>
+                <input id="overall_amount" name="overall_amount"
+                       class="presentational_input" readonly/>
+                &nbsp;<b>₪</b>
+            </div>
+            <div id="view_order_status">
+                <input type="text" id="order_status" class="presentational_input"
+                       value=
+                       {if $order.order_status == "unpayed"}"ההזמנה פתוחה"{/if}
+                {if $order.order_status == "payed"}"ההזמנה סגורה"{/if}
+                {if !isset($order)}""{/if}
+                readonly />
+            </div>
         {/if}
     </div>
 {/if}

@@ -2,8 +2,8 @@
 
 CREATE TABLE `coops-prod`.`money_transfers` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `transfering_party_type` INT NOT NULL,
-  `transfering_party_id` INT UNSIGNED NOT NULL,
+  `transferring_party_type` INT NOT NULL,
+  `transferring_party_id` INT UNSIGNED NOT NULL,
   `receiving_party_type` INT NOT NULL,
   `receiving_party_id` INT UNSIGNED NOT NULL,
   `amount` DECIMAL(19,4) NOT NULL DEFAULT 0,
@@ -15,5 +15,5 @@ CREATE TABLE `coops-prod`.`money_transfers` (
 # Table: orders
 
 ALTER TABLE `coops-prod`.`orders`
-ADD COLUMN `previous_dept_when_closed` DECIMAL(19,4) NOT NULL DEFAULT 0 AFTER `order_reset_day`,
+ADD COLUMN `previous_debt_when_closed` DECIMAL(19,4) NOT NULL DEFAULT 0 AFTER `order_reset_day`,
 ADD COLUMN `order_total_when_closed` DECIMAL(19,4) NOT NULL DEFAULT 0;

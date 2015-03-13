@@ -451,6 +451,17 @@ option #unpayed
     margin-top: 10px;
 }
 
+#view_total_sums {
+    float: left;
+    margin-bottom: 5px;
+}
+
+
+#view_order_status {
+    float: left;
+    margin-bottom: 5px;
+}
+
 /* order form */
 #order_form table
 {

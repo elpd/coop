@@ -98,7 +98,18 @@ class UserController extends CustomController
 			
 	    	$this->_smarty->assign('cats', $categories);			
 		}
-    		
+
+        $user_debt = 0;
+        if (empty($order) || $order['order_status'] == 'unpayed') {
+            $user_debt = $coop_users->calcDebt($user_id, '2000-01-01', $order['order_reset_day']);
+        } else {
+            $previous_debt = !empty($order['previous_debt_when_closed']) ?
+                $order['previous_debt_when_closed'] : 0;
+            $user_debt = $previous_debt;
+        }
+
+        $this->_smarty->assign('user_debt', $user_debt);
+
 	    $this->_smarty->assign('backto', 'user/current');
 		$this->_smarty->assign('order_view_type', Coop_OrderViewType::get());
 		
@@ -111,7 +122,7 @@ class UserController extends CustomController
     {
     	$params = $this->getRequest()->getParams();
     	$coop_id = $this->getCoopId();
-		
+
     	$coop_orders = new Coop_Orders();
 		$order = $coop_orders->getOrder((int)$params['id']);
 
@@ -123,7 +134,17 @@ class UserController extends CustomController
     	$this->_smarty->assign('cats', $cats);
     	
     	$this->_smarty->assign('order_view_type', Coop_OrderViewType::get());
-			
+
+        $this->_smarty->assign('order', $order);
+
+        $user_debt = 0;
+        if ($order['order_status'] == 'payed') {
+            $previous_debt = !empty($order['previous_debt_when_closed']) ?
+                $order['previous_debt_when_closed'] : 0;
+            $user_debt = $previous_debt;
+        }
+        $this->_smarty->assign('user_debt', $user_debt);
+
     	$this->_smarty->assign('tpl_file', 'user/user_prev_order.tpl');
     	$this->_smarty->display('common/layout.tpl');    	
     }

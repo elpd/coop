@@ -152,7 +152,27 @@ class Coop_Users extends Awsome_DbTable
 		return $this->delete($id);
 	}
 
-    public function calcCurrentDept($id) {
-        return 45;
+    public function calcDebt($id, $fromDateStr, $toDateStr) {
+
+        $moneyTransfers = new Coop_MoneyTransfers();
+        $orders = new Coop_Orders();
+        $user = $this->getUser($id);
+
+        $user_id = $user['user_id'];
+        $coop_id = $user['coop_id'];
+
+        $userSumReceiving = $moneyTransfers->calc_sumMoneyAmount_fromCoopToUser(
+            $user_id, $coop_id, $fromDateStr, $toDateStr);
+
+        $userSumGiving = $moneyTransfers->calc_sumMoneyAmount_fromUserToCoop(
+            $user_id, $coop_id, $fromDateStr, $toDateStr);
+
+        $userSumCoopCharges = $orders->calcForUser_sumCharges(
+            $user_id, $fromDateStr, $toDateStr);
+
+
+        $userCurrentDept = $userSumCoopCharges - ($userSumGiving - $userSumReceiving);
+
+        return $userCurrentDept;
     }
 }

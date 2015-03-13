@@ -14,7 +14,7 @@ class Coop_Orders extends Awsome_DbTable
             "order_last_edit",
             "order_status",
             "order_reset_day",
-            "previous_dept_when_closed",
+            "previous_debt_when_closed",
             "order_total_when_closed"
         );
 		$this->nameColumn = "order_id";
@@ -72,7 +72,7 @@ class Coop_Orders extends Awsome_DbTable
 		$row = $this->adapter->fetchRow($sql);
 		return $row['total'];
 	}
-	
+
 	public function getCurrentOrder($user_id)
 	{
             $coop_users = new Coop_Users();
@@ -403,4 +403,21 @@ class Coop_Orders extends Awsome_DbTable
 	{
 		return $this->delete($id);
 	}
+
+    public function calcForUser_sumCharges($user_id, $fromDateStr, $toDateStr) {
+        $statusPayed = $this::STATUS_PAYED;
+
+        $sql = "select sum(ord.order_total_when_closed) as total
+				from orders ord
+				where ord.user_id = '$user_id'
+				and ord.order_deleted = 0
+                and ord.order_status = '$statusPayed'
+                and ord.order_reset_day BETWEEN '$fromDateStr' and '$toDateStr' ";
+
+        $row = $this->adapter->fetchRow($sql);
+
+        $total = ($row['total'] != null) ? $row['total'] : 0;
+        return $total;
+    }
+
 }

@@ -165,15 +165,15 @@ class DutyController extends CustomController
         $this->_smarty->assign('duty_editing', true);
 
         $user_id = $order['user_id'];
-        $user_dept = 0;
+        $user_debt = 0;
         if ($order['order_status'] == 'unpayed') {
-            $user_dept = $coop_users->calcCurrentDept($user_id);
+            $user_debt = $coop_users->calcDebt($user_id, '2000-01-01', $order['order_reset_day']);
         } else {
-            $previous_dept = !empty($order['previous_dept_when_closed']) ?
-                $order['previous_dept_when_closed'] : 0;
-           $user_dept = $previous_dept;
+            $previous_debt = !empty($order['previous_debt_when_closed']) ?
+                $order['previous_debt_when_closed'] : 0;
+           $user_debt = $previous_debt;
         }
-        $this->_smarty->assign('user_dept', $user_dept);
+        $this->_smarty->assign('user_debt', $user_debt);
 
     	$this->_smarty->assign('tpl_file', 'duty/duty_view_order.tpl');
     	$this->_smarty->display('common/layout.tpl');    	

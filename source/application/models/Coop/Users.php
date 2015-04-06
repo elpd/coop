@@ -151,4 +151,8 @@ class Coop_Users extends Awsome_DbTable
 	{
 		return $this->delete($id);
 	}
+
+    public function calcCurrentDept($id) {
+        return 45;
+    }
 }

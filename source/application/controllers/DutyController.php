@@ -164,6 +164,17 @@ class DutyController extends CustomController
         $this->_smarty->assign('edit', '1');
         $this->_smarty->assign('duty_editing', true);
 
+        $user_id = $order['user_id'];
+        $user_dept = 0;
+        if ($order['order_status'] == 'unpayed') {
+            $user_dept = $coop_users->calcCurrentDept($user_id);
+        } else {
+            $previous_dept = !empty($order['previous_dept_when_closed']) ?
+                $order['previous_dept_when_closed'] : 0;
+           $user_dept = $previous_dept;
+        }
+        $this->_smarty->assign('user_dept', $user_dept);
+
     	$this->_smarty->assign('tpl_file', 'duty/duty_view_order.tpl');
     	$this->_smarty->display('common/layout.tpl');    	
     }
@@ -236,7 +247,7 @@ class DutyController extends CustomController
     }
     
 	
-    public function changeStatusAction()
+/*    public function changeStatusAction()
     {
     	$params = $this->getRequest()->getParams();
     	$status = $params['status'];
@@ -249,7 +260,7 @@ class DutyController extends CustomController
     	$coop_orders = new Coop_Orders();
     	$coop_orders->editOrder($order_id, array('order_status' => $status));
     	echo 1;	
-    }
+    }*/
     
     public function printAction()
     {    	

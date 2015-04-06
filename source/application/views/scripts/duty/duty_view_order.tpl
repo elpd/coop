@@ -1,7 +1,7 @@
 <!-- current order -->
 
-<script>var status_url = '{$public_path}/duty/change-status/id/%orderid%/status/%status%';</script>
-<script src="{$js_path}/status.js"></script>
+{*<script>var status_url = '{$public_path}/duty/change-status/id/%orderid%/status/%status%';</script>
+<script src="{$js_path}/status.js"></script>*}
 
 <div class="section">
 	<div class="title">

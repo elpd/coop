@@ -406,7 +406,7 @@ option #unpayed
 	background-color: white;
 	border-top: 1px solid black;
 	width: 930px;
-	height: 40px;
+	height: 80px;
         padding-top: 0px;
 	padding-left: 15px;
 	vertical-align: middle;
@@ -418,24 +418,31 @@ option #unpayed
     padding-top: 0px;
 }
 
-#submit_form_container #submit_form
+#submit_form_container .submit_button
 {
 	float: left;
-	padding: 26px;
-	padding-top: 0px;
-	padding-bottom: 10px;
-	font-size: 30px;
-	font-weight: bold;
+	padding: 0px 7px;
+	font-size: 25px;
 	margin-right: 10px;
-    border: 1px solid;
-	border-radius: 10px;
+    /*border: 1px solid;*/
+	border-radius: 8px;
+    margin: 2px;
+}
+
+#submit_form_container #close_order_submit {
+    font-weight: bold;
 }
 
 #sticky_total
 {
-    float: left;
-    padding-top:14px;
+    float: right;
+    /*padding-top:14px;*/
 	font-size: 14px;
+    margin-right: 15px;
+}
+
+#sticky_total_payment {
+    float: right;
 }
 
 #sticky_right
@@ -691,4 +698,11 @@ option #unpayed
 	background-color: red;
 	color: white;
 	opacity: 0.5;
+}
+
+.presentational_input {
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    margin-right: 5px;
 }

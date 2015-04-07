@@ -69,11 +69,9 @@ class UserController extends CustomController
 		
 		$coop_users = new Coop_Users();
     	$user_id = $coop_users->getLoggedUserID();
-		
 
     	$coop_orders = new Coop_Orders();
 	    $order = $coop_orders->getCurrentOrder($user_id);
-
 
 	    if (!empty($order))
 	    {
@@ -99,16 +97,20 @@ class UserController extends CustomController
 	    	$this->_smarty->assign('cats', $categories);			
 		}
 
-        $user_debt = 0;
-        if (empty($order) || $order['order_status'] == 'unpayed') {
-            $user_debt = $coop_users->calcDebt($user_id, '2000-01-01', $order['order_reset_day']);
-        } else {
-            $previous_debt = !empty($order['previous_debt_when_closed']) ?
-                $order['previous_debt_when_closed'] : 0;
-            $user_debt = $previous_debt;
-        }
+        $toDate = $order ? $order['order_reset_day'] : $coop['coop_reset_day'];
+        $user_current_debt = $user_current_debt = $coop_users->calcDebtFromBegining(
+            $user_id, $toDate);
+        $this->_smarty->assign('user_current_debt', $user_current_debt);
 
-        $this->_smarty->assign('user_debt', $user_debt);
+        $previous_debt_when_closed = !empty($order['previous_debt_when_closed']) ?
+            $order['previous_debt_when_closed'] : 0;
+        $previous_order_total_when_closed = !empty($order['order_total_when_closed']) ?
+            $order['order_total_when_closed'] : 0;
+        $this->_smarty->assign('previous_debt_when_closed', $previous_debt_when_closed);
+        $this->_smarty->assign('previous_order_total_when_closed', $previous_order_total_when_closed);
+
+        $connected_transfer_amount = $order ? $coop_orders->getAmountOfConnectedTransfer($order['order_id']) : 0;
+        $this->_smarty->assign('connected_transfer_amount', $connected_transfer_amount);
 
 	    $this->_smarty->assign('backto', 'user/current');
 		$this->_smarty->assign('order_view_type', Coop_OrderViewType::get());
@@ -137,13 +139,15 @@ class UserController extends CustomController
 
         $this->_smarty->assign('order', $order);
 
-        $user_debt = 0;
-        if ($order['order_status'] == 'payed') {
-            $previous_debt = !empty($order['previous_debt_when_closed']) ?
-                $order['previous_debt_when_closed'] : 0;
-            $user_debt = $previous_debt;
-        }
-        $this->_smarty->assign('user_debt', $user_debt);
+        $previous_debt_when_closed = !empty($order['previous_debt_when_closed']) ?
+            $order['previous_debt_when_closed'] : 0;
+        $previous_order_total_when_closed = !empty($order['order_total_when_closed']) ?
+            $order['order_total_when_closed'] : 0;
+        $this->_smarty->assign('previous_debt_when_closed', $previous_debt_when_closed);
+        $this->_smarty->assign('previous_order_total_when_closed', $previous_order_total_when_closed);
+
+        $connected_transfer_amount = $order ? $coop_orders->getAmountOfConnectedTransfer($order['order_id']) : 0;
+        $this->_smarty->assign('connected_transfer_amount', $connected_transfer_amount);
 
     	$this->_smarty->assign('tpl_file', 'user/user_prev_order.tpl');
     	$this->_smarty->display('common/layout.tpl');    	

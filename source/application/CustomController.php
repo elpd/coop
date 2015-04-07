@@ -151,24 +151,12 @@ class CustomController extends Zend_Controller_Action
             }
         }
 
-        $editArray = array();
-        if ($isSaveAction) {
-            $editArray = array(
-                'order_last_edit' => date('Y-m-d H:i:s'),
-                'order_status' => 'unpayed'
-            );
-        } elseif ($isCloseAction) {
-            $previous_debt = $post['previous_debt'];
-            $order_total_when_closed = $post['total_amount'];
-            $editArray = array(
-                'order_last_edit' => date('Y-m-d H:i:s'),
-                'order_status' => 'payed',
-                'previous_debt_when_closed' => (float)$previous_debt,
-                'order_total_when_closed' => (float)$order_total_when_closed
-            );
-        }
+        $temp_order_total = $coop_orders->calcTotalPurchase($order['order_id']);
 
-        $coop_orders->editOrder($order['order_id'], $editArray);
+        $coop_orders->editOrder($order['order_id'], array(
+            'order_last_edit' => date('Y-m-d H:i:s'),
+            'order_total_when_closed' => $temp_order_total
+        ));
 
         if (isset($post['user_comments'])) {
             $order = $coop_orders->getOrder($order['order_id']);
@@ -177,26 +165,8 @@ class CustomController extends Zend_Controller_Action
         }
 
         if ($isCloseAction) {
-            $coop_money_transfers = new Coop_MoneyTransfers();
-
-            $order = $coop_orders->getOrder($order['order_id']);
-            $user_id = $order['user_id'];
-            $coop_id = $order['coop_id'];
             $actual_payment = $post['actual_payment'];
-            $transfer_date = date('Y-m-d H:i:s');
-            $feeder_id = $coop_users->getLoggedUserID();
-
-            $transferData = array(
-                transferring_party_type => Coop_MoneyTransfers::PARTY_TYPE_USER,
-                transferring_party_id => $user_id,
-                receiving_party_type => Coop_MoneyTransfers::PARTY_TYPE_COOP,
-                receiving_party_id => $coop_id,
-                amount => $actual_payment,
-                transfer_date => $transfer_date,
-                feeder_id => $feeder_id,
-                comment => '',
-            );
-            $coop_money_transfers->addMoneyTransfer($transferData);
+            $coop_orders->closeOrder($order['order_id'], $actual_payment);
         }
 
         $backto = str_replace("%id%", $order['order_id'], $post['backto']);

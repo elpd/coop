@@ -15,7 +15,8 @@ class Coop_Orders extends Awsome_DbTable
             "order_status",
             "order_reset_day",
             "previous_debt_when_closed",
-            "order_total_when_closed"
+            "order_total_when_closed",
+            "time_of_closing"
         );
 		$this->nameColumn = "order_id";
 		$this->primaryColumn = "order_id";
@@ -354,7 +355,7 @@ class Coop_Orders extends Awsome_DbTable
 		return $report;
 	}	
         
-        public function getPayments($coop_id, $reset_day)
+        public function getPayments($coop_id, $reset_day) // TODO: research
         {
            $sql = "SELECT pc.category_id, p.`product_price` * SUM(oi.item_amount) AS payments
             FROM orders o, order_items oi, products p, product_categories AS pc 
@@ -420,4 +421,72 @@ class Coop_Orders extends Awsome_DbTable
         return $total;
     }
 
+    public function closeOrder($id, $actualPayment) {
+        $order = $this->getOrder($id);
+        if (!$order) {
+            throw new \Exception('operatoin require existing item: order. id: ' . $id);
+        }
+
+        $coop_money_transfers = new Coop_MoneyTransfers();
+        $coop_users = new Coop_Users();
+
+        $user_id = $order['user_id'];
+        $coop_id = $order['coop_id'];
+
+        $previous_dept = $coop_users->calcDebtFromBegining($user_id, $order['order_reset_day']);;
+        $order_total = $this->calcTotalPurchase($id);
+
+        $this->editOrder($id, array(
+            'order_last_edit' => date('Y-m-d H:i:s'),
+            'order_status' => $this::STATUS_PAYED,
+            'previous_debt_when_closed' => $previous_dept,
+            'order_total_when_closed' => $order_total,
+            'time_of_closing' => date('Y-m-d H:i:s')
+        ));
+
+        $transfer_date = date('Y-m-d H:i:s');
+        $feeder_id = $coop_users->getLoggedUserID();
+
+        $transferData = array(
+            transferring_party_type => Coop_MoneyTransfers::PARTY_TYPE_USER,
+            transferring_party_id => $user_id,
+            receiving_party_type => Coop_MoneyTransfers::PARTY_TYPE_COOP,
+            receiving_party_id => $coop_id,
+            amount => $actualPayment,
+            transfer_date => $transfer_date,
+            feeder_id => $feeder_id,
+            comment => '', // TODO
+        );
+        $coop_money_transfers->addMoneyTransfer($transferData);
+    }
+
+    public function calcTotalPurchase($id) {
+        $order = $this->getOrder($id);
+        if (!$order) {
+            throw new \Exception('operation require existing item: order. id: ' . $id);
+        }
+
+        $sql = "select sum(order_item.item_amount * product.product_price) as total
+				from orders ord, order_items order_item, products product
+				where ord.order_id = '$id'
+				and order_item.order_id = ord.order_id
+				and product.product_id = order_item.product_id";
+
+        $row = $this->adapter->fetchRow($sql);
+
+        $total = ($row['total'] != null) ? $row['total'] : 0;
+        return $total;
+    }
+
+    public function getAmountOfConnectedTransfer($order_id) {
+        $order = $this->getOrder($order_id);
+        if (!$order) {
+            throw new \Exception('operation require existing item: order. id: ' . $order_id);
+        }
+
+        $coop_money_transfers = new Coop_MoneyTransfers();
+        $transfer = $coop_money_transfers->queryTransfersFitForOrder($order_id);
+
+        return $transfer ? $transfer['amount'] : 0;
+    }
 }

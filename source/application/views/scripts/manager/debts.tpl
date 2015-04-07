@@ -11,10 +11,10 @@
 			<th>שם</th>
 			<th>חוב</th>
 			{foreach from=$users item=row}
-			{if $row.user_comments != NULL}
+			{if $row.calc_current_debt != NULL}
 			<tr>
 				<td><a href="{$public_path}/manager/edit-user/id/{$row.user_id}">{$row.user_first_name|escape:"html"|stripslashes} {$row.user_last_name|escape:"html"|stripslashes}</a></td>
-				<td>{$row.user_comments|escape:"html"|stripslashes}</td>
+				<td>{$row.calc_current_debt|escape:"html"|stripslashes}</td>
 			</tr>
 			{/if}
 			{/foreach}

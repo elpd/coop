@@ -43,7 +43,7 @@
                 {foreach from=$orders key=group item=group_orders}
                 	<div id="orders_group_{$group}">
                     <div class="title">
-                         <h3>{if $group=="payed"}שולמו{else}לא שולמו{/if}</h3>
+                         <h3>{if $group=="payed"}הזמנות סגורות{else}הזמנות פתוחות{/if}</h3>
                     </div>
                     <table>
 			<th>שם</th>
@@ -55,7 +55,7 @@
 				<td><a href="{$public_path}/duty/view-order/id/{$order.order_id}">{$order.user_first_name|escape:"html"|stripslashes} {$order.user_last_name|escape:"html"|stripslashes}</a></td>
 				<td>{$order.user_phone|escape:"html"|stripslashes}</td>
 				<td>{$order.order_last_edit|date_format:"%d/%m/%y %H:%M"}</td>
-				<td>₪{$order.total|string_format:"%.2f"}</td>
+				<td>₪{$order.order_total_when_closed|string_format:"%.2f"}</td>
 			</tr>
 			{/foreach}
 		</table>	

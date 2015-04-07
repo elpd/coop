@@ -567,7 +567,7 @@ class ManagerController extends CustomController
     {
     	$coop_id = $this->getCoopId();
 		$coop_users = new Coop_Users();
-		$users = $coop_users->getAllUsers($coop_id);
+		$users = $coop_users->getAllUsersWithDebt($coop_id);
 		
 		$this->_smarty->assign('users', $users);
 		

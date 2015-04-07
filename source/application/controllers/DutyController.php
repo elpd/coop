@@ -165,15 +165,19 @@ class DutyController extends CustomController
         $this->_smarty->assign('duty_editing', true);
 
         $user_id = $order['user_id'];
-        $user_debt = 0;
-        if ($order['order_status'] == 'unpayed') {
-            $user_debt = $coop_users->calcDebt($user_id, '2000-01-01', $order['order_reset_day']);
-        } else {
-            $previous_debt = !empty($order['previous_debt_when_closed']) ?
+        $user_current_debt = $user_current_debt = $coop_users->calcDebtFromBegining(
+            $user_id, $order['order_reset_day']);
+        $this->_smarty->assign('user_current_debt', $user_current_debt);
+
+        $previous_debt_when_closed = !empty($order['previous_debt_when_closed']) ?
                 $order['previous_debt_when_closed'] : 0;
-           $user_debt = $previous_debt;
-        }
-        $this->_smarty->assign('user_debt', $user_debt);
+        $previous_order_total_when_closed = !empty($order['order_total_when_closed']) ?
+            $order['order_total_when_closed'] : 0;
+        $this->_smarty->assign('previous_debt_when_closed', $previous_debt_when_closed);
+        $this->_smarty->assign('previous_order_total_when_closed', $previous_order_total_when_closed);
+
+        $connected_transfer_amount = $order ? $coop_orders->getAmountOfConnectedTransfer($order['order_id']) : 0;
+        $this->_smarty->assign('connected_transfer_amount', $connected_transfer_amount);
 
     	$this->_smarty->assign('tpl_file', 'duty/duty_view_order.tpl');
     	$this->_smarty->display('common/layout.tpl');    	

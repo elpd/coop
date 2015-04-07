@@ -406,7 +406,7 @@ option #unpayed
 	background-color: white;
 	border-top: 1px solid black;
 	width: 930px;
-	height: 80px;
+	height: 85px;
         padding-top: 0px;
 	padding-left: 15px;
 	vertical-align: middle;
@@ -415,7 +415,7 @@ option #unpayed
 #submit_form_container
 {
     float: left;
-    padding-top: 0px;
+    padding-top: 5px;
 }
 
 #submit_form_container .submit_button
@@ -716,4 +716,41 @@ option #unpayed
     border-left: 0;
     border-right: 0;
     margin-right: 5px;
+}
+
+#order_information_for_buyer {
+    float: left;
+}
+
+#order_information_for_buyer .order_status {
+    float: left;
+    margin-top: 7px;
+    margin-left: 15px;
+}
+
+#sticky_order_information_for_buyer {
+    float: left;
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+#sticky_order_information_for_buyer .order_status {
+    float: left;
+    margin-top: 7px;
+    margin-left: 15px;
+}
+
+#order_information_when_closed {
+    float: left;
+}
+
+#order_information_when_closed .order_status {
+    float: left;
+    margin-left: 15px;
+}
+
+#goback_link
+{
+    float: right;
+    margin-top: 10px;
 }

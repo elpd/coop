@@ -12,7 +12,7 @@ $(document).ready(function () {
         .scroll(positionFooter)
         .resize(positionFooter)
 
-    calcTotalAmount();
+    redrawTotals();
 
     function calcTotalAmount() {
         var total = 0;
@@ -20,16 +20,36 @@ $(document).ready(function () {
             total += parseFloat($(this).html());
         });
 
-        $("#total_amount").val(total.toFixed(2));
+        return total;
+    }
 
-        var previous_debt = parseFloat($("#previous_debt").val());
-        var overall_amount = previous_debt + total;
-        $("#overall_amount").val(overall_amount.toFixed(2));
+    function redrawTotals() {
+        var total = calcTotalAmount();
 
-        var actual_payment = parseFloat($("#actual_payment").val());
-        actual_payment = isNaN(actual_payment) ? 0 : actual_payment;
-        var overall_debt = overall_amount - actual_payment;
-        $("#overall_debt").val(overall_debt.toFixed(2));
+        drawOrderRevaluation(total, user_current_debt);
+        drawCashierInput(total, user_current_debt);
+    }
+
+    function drawOrderRevaluation(current_order_amount, user_current_debt) {
+        if ($('.order_revaluation').length) {
+            $("#current_order_amount").val(current_order_amount.toFixed(2));
+
+            var overall_amount_to_pay = user_current_debt + current_order_amount;
+
+            $("#overall_amount_to_pay").val(overall_amount_to_pay.toFixed(2));
+        }
+    }
+
+    function drawCashierInput(total, user_current_debt){
+        if ($('.cashier_input').length){
+            var actual_payment = parseFloat($("#actual_payment").val());
+            actual_payment = isNaN(actual_payment) ? 0 : actual_payment;
+
+            var overall_amount_to_pay = user_current_debt + total;
+
+            var estimated_debt_after_payment = overall_amount_to_pay - actual_payment;
+            $("#estimated_debt_after_payment").val(estimated_debt_after_payment.toFixed(2));
+        }
     }
 
     $(".amount_input").keyup(function () {
@@ -56,11 +76,12 @@ $(document).ready(function () {
         }
         $(".amount_txt[product_id='" + product_id + "']").html(cost);
 
-        calcTotalAmount();
+        redrawTotals();
     });
 
     $('#actual_payment').keyup(function(){
-       calcTotalAmount();
+        var total = calcTotalAmount();
+        drawCashierInput(total, user_current_debt);
     });
 
     // display only line we ordered
@@ -138,12 +159,12 @@ $(document).ready(function () {
         $("input, select").bind("keydown", "Ctrl+1", function () {
             $(".acinput").focus();
         });
-        $(document).bind("keydown", "Ctrl+s", function () {
+        /*$(document).bind("keydown", "Ctrl+s", function () {
             $(".status").focus();
         });
         $("input").bind("keydown", "Ctrl+s", function () {
             $(".status").focus();
-        });
+        });*/
         $(".acinput").focus();
     }
 
@@ -186,5 +207,10 @@ $(document).ready(function () {
         }
     });
 
+    if (order_status == "payed") {
+        $(".amount_input").attr('disabled','disabled');
+        $(".acinput").attr('disabled', 'disabled');
+        $(".user_comments").attr('disabled', 'disabled');
+    }
 
 });

@@ -16,4 +16,5 @@ CREATE TABLE `coops-prod`.`money_transfers` (
 
 ALTER TABLE `coops-prod`.`orders`
 ADD COLUMN `previous_debt_when_closed` DECIMAL(19,4) NOT NULL DEFAULT 0 AFTER `order_reset_day`,
-ADD COLUMN `order_total_when_closed` DECIMAL(19,4) NOT NULL DEFAULT 0;
+ADD COLUMN `order_total_when_closed` DECIMAL(19,4) NOT NULL DEFAULT 0,
+ADD COLUMN `time_of_closing` DATE NULL;

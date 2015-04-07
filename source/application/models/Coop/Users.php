@@ -101,7 +101,19 @@ class Coop_Users extends Awsome_DbTable
 	{
 		return $this->getUsers("*", $coop_id);
 	}
-	
+
+    public function getAllUsersWithDebt($coop_id) {
+        $users = $this->getAllUsers($coop_id);
+        $newUsers = array();
+        foreach ($users as $user) {
+           $user_debt = $this->calcDebtFromBeginingTillNow($user['user_id']);
+           $user['calc_current_debt'] = $user_debt;
+            array_push($newUsers, $user);
+        }
+
+        return $newUsers;
+    }
+
 	public function getAllUsersFullNameAndID($coop_id)
 	{
 		return $this->getUsers("user_id, user_first_name, user_last_name", $coop_id);
@@ -161,18 +173,31 @@ class Coop_Users extends Awsome_DbTable
         $user_id = $user['user_id'];
         $coop_id = $user['coop_id'];
 
-        $userSumReceiving = $moneyTransfers->calc_sumMoneyAmount_fromCoopToUser(
+        //
+
+        $receiving = $moneyTransfers->calc_sumMoneyAmount_fromCoopToUser(
             $user_id, $coop_id, $fromDateStr, $toDateStr);
 
-        $userSumGiving = $moneyTransfers->calc_sumMoneyAmount_fromUserToCoop(
+        $giving = $moneyTransfers->calc_sumMoneyAmount_fromUserToCoop(
             $user_id, $coop_id, $fromDateStr, $toDateStr);
 
         $userSumCoopCharges = $orders->calcForUser_sumCharges(
             $user_id, $fromDateStr, $toDateStr);
 
 
-        $userCurrentDept = $userSumCoopCharges - ($userSumGiving - $userSumReceiving);
+        $userCurrentDept = $userSumCoopCharges - ($giving - $receiving);
 
         return $userCurrentDept;
+    }
+
+    public function calcDebtFromBegining($id, $toDateStr) {
+        $fromDateStr = '2000-01-01';
+        return $this->calcDebt($id, $fromDateStr, $toDateStr);
+    }
+
+    public function calcDebtFromBeginingTillNow($user_id) {
+        $fromDateStr = '2000-01-01';
+        $toDateStr = date('Y-m-d H:i:s');
+        return $this->calcDebt($user_id, $fromDateStr, $toDateStr);
     }
 }
